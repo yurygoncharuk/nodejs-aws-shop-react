@@ -36,3 +36,8 @@ Runs tests in console, in browser or with coverage.
 ### `lint`, `prettier`
 
 Runs linting and formatting for all files in `src` folder.
+
+## Task 2 results
+| AWS CloudFront                                          | AWS S3                                               |
+|---------------------------------------------------------|------------------------------------------------------|
+| [CloudFront URL](https://d13ao4mqdtk7on.cloudfront.net/) | [S3-website](http://rs-school-task-s3.s3-website-eu-west-1.amazonaws.com/) |
