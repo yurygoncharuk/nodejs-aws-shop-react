@@ -20,12 +20,17 @@ export class DeployStack extends cdk.Stack {
     const siteBucket = new s3.Bucket(this, bucketName, {
       bucketName: bucketName,
       websiteIndexDocument: webIndexDocument,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       versioned: true
     });
+
+    new cdk.CfnOutput(this, "Bucket", { value: siteBucket.bucketName });
+    new cdk.CfnOutput(this, "BucketURL", { value: siteBucket.bucketWebsiteUrl });
 
     siteBucket.addToResourcePolicy(
       new iam.PolicyStatement({
@@ -50,6 +55,10 @@ export class DeployStack extends cdk.Stack {
         responsePagePath: `/${webIndexDocument}`
       }]
     });
+
+    new cdk.CfnOutput(this, "DistributionId", { value: distribution.distributionId });
+
+    new cdk.CfnOutput(this, "DomainName", { value: distribution.distributionDomainName });
 
     // S3 Deployment
     new s3deployment.BucketDeployment(this, "rs-school-task-bucket-deploy", {
