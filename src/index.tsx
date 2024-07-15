@@ -7,6 +7,20 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { theme } from "~/theme";
+import axios, { AxiosError } from "axios";
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      const data = error.response?.data as { message: unknown };
+      alert(
+        `Authorization failed: ${[error.response?.status, data.message || error.message]}`
+      )
+    }
+    return Promise.reject(error);
+  }
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
