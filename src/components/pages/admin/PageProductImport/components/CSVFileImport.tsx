@@ -15,6 +15,7 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+      console.log("file", file);
       setFile(file);
     }
   };
