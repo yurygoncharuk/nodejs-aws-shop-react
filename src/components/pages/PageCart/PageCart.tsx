@@ -24,7 +24,7 @@ const initialAddressValues = AddressSchema.cast({});
 
 const CartIsEmpty = () => (
   <Typography variant="h6" gutterBottom>
-    The cart is empty. Didn&apos;t you like anything in our shop?
+    The cart is empty. Would you like to order anything in our shop?
   </Typography>
 );
 
@@ -52,6 +52,8 @@ export default function PageCart() {
   const [address, setAddress] = useState<Address>(initialAddressValues);
 
   const isCartEmpty = data.length === 0;
+  const isLastStep = activeStep >= steps.length - 1;
+
 
   const handleNext = () => {
     if (activeStep !== CartStep.ReviewOrder) {
@@ -98,7 +100,7 @@ export default function PageCart() {
           </Step>
         ))}
       </Stepper>
-      {isCartEmpty && <CartIsEmpty />}
+      {isCartEmpty && !isLastStep && <CartIsEmpty />}
       {!isCartEmpty && activeStep === CartStep.ReviewCart && (
         <ReviewCart items={data} />
       )}
@@ -128,7 +130,7 @@ export default function PageCart() {
               sx={{ mt: 3, ml: 1 }}
               onClick={handleNext}
             >
-              {activeStep === steps.length - 1 ? "Place order" : "Next"}
+              {isLastStep ? "Place order" : "Next"}
             </Button>
           </Box>
         )}
