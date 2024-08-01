@@ -4,7 +4,6 @@ import { aws_s3_deployment as s3deployment } from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import { aws_cloudfront as cloudfront } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class DeployStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -50,7 +49,7 @@ export class DeployStack extends cdk.Stack {
         behaviors: [{ isDefaultBehavior: true }]
       }],
       errorConfigurations: [{
-        errorCode: 404,
+        errorCode: 403,
         responseCode: 200,
         responsePagePath: `/${webIndexDocument}`
       }]

@@ -9,7 +9,7 @@ import ReviewOrder from "~/components/pages/PageCart/components/ReviewOrder";
 import PaperLayout from "~/components/PaperLayout/PaperLayout";
 import { Address, AddressSchema, Order } from "~/models/Order";
 import Box from "@mui/material/Box";
-import { useCart, useInvalidateCart } from "~/queries/cart";
+import { useCart, useCheckout, useInvalidateCart } from "~/queries/cart";
 import AddressForm from "~/components/pages/PageCart/components/AddressForm";
 import { useSubmitOrder } from "~/queries/orders";
 
@@ -24,7 +24,7 @@ const initialAddressValues = AddressSchema.cast({});
 
 const CartIsEmpty = () => (
   <Typography variant="h6" gutterBottom>
-    The cart is empty. Didn&apos;t you like anything in our shop?
+    The cart is empty. Would you like to order anything in our shop?
   </Typography>
 );
 
@@ -44,7 +44,7 @@ const steps = ["Review your cart", "Shipping address", "Review your order"];
 
 export default function PageCart() {
   const { data = [] } = useCart();
-  const { mutate: submitOrder } = useSubmitOrder();
+  const { mutate: submitOrder } = useCheckout();
   const invalidateCart = useInvalidateCart();
   const [activeStep, setActiveStep] = React.useState<CartStep>(
     CartStep.ReviewCart
@@ -52,6 +52,8 @@ export default function PageCart() {
   const [address, setAddress] = useState<Address>(initialAddressValues);
 
   const isCartEmpty = data.length === 0;
+  const isLastStep = activeStep >= steps.length - 1;
+
 
   const handleNext = () => {
     if (activeStep !== CartStep.ReviewOrder) {
@@ -60,13 +62,13 @@ export default function PageCart() {
     }
     const values = {
       items: data.map((i) => ({
-        productId: i.product.id,
+        productId: i.product_id,
         count: i.count,
       })),
       address,
     };
 
-    submitOrder(values as Omit<Order, "id">, {
+    submitOrder(values as unknown as Omit<Order, "id">, {
       onSuccess: () => {
         setActiveStep(activeStep + 1);
         invalidateCart();
@@ -98,7 +100,7 @@ export default function PageCart() {
           </Step>
         ))}
       </Stepper>
-      {isCartEmpty && <CartIsEmpty />}
+      {isCartEmpty && !isLastStep && <CartIsEmpty />}
       {!isCartEmpty && activeStep === CartStep.ReviewCart && (
         <ReviewCart items={data} />
       )}
@@ -128,7 +130,7 @@ export default function PageCart() {
               sx={{ mt: 3, ml: 1 }}
               onClick={handleNext}
             >
-              {activeStep === steps.length - 1 ? "Place order" : "Next"}
+              {isLastStep ? "Place order" : "Next"}
             </Button>
           </Box>
         )}

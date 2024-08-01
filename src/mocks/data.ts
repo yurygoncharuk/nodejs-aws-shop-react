@@ -70,7 +70,7 @@ export const cart: CartItem[] = [
 export const orders: Order[] = [
   {
     id: "1",
-    address: {
+    delivery: {
       address: "some address",
       firstName: "Name",
       lastName: "Surname",
@@ -83,10 +83,12 @@ export const orders: Order[] = [
     statusHistory: [
       { status: OrderStatus.Open, timestamp: Date.now(), comment: "New order" },
     ],
+    status: OrderStatus.Open,
+    comment: "",
   },
   {
     id: "2",
-    address: {
+    delivery: {
       address: "another address",
       firstName: "John",
       lastName: "Doe",
@@ -100,5 +102,7 @@ export const orders: Order[] = [
         comment: "Fancy order",
       },
     ],
+    status: OrderStatus.Sent,
+    comment: "",
   },
 ];
