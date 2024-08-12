@@ -35,8 +35,8 @@ export default function PageOrder() {
     {
       queryKey: ["order", { id }],
       queryFn: async () => {
-        const res = await axios.get<Order>(`${API_PATHS.order}/order/${id}`);
-        return res.data;
+        const res = await axios.get<{ data: Order }>(`${API_PATHS.order}/order/${id}`);
+        return res.data.data;
       },
     },
     {
@@ -49,10 +49,12 @@ export default function PageOrder() {
       },
     },
   ]);
+
   const [
     { data: order, isLoading: isOrderLoading },
     { data: products, isLoading: isProductsLoading },
   ] = results;
+  
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
   const invalidateOrder = useInvalidateOrder();
   const cartItems: CartItem[] = React.useMemo(() => {
@@ -70,7 +72,12 @@ export default function PageOrder() {
 
   if (isOrderLoading || isProductsLoading) return <p>loading...</p>;
 
-  const statusHistory = order?.statusHistory || [];
+  //const statusHistory = order?.statusHistory || [];
+  const statusHistory = [{
+    status: order?.status || null,
+    timestamp: new Date().toISOString(),
+    comment: order?.comment || ''
+  }]
 
   const lastStatusItem = statusHistory[statusHistory.length - 1];
 
@@ -79,15 +86,15 @@ export default function PageOrder() {
       <Typography component="h1" variant="h4" align="center">
         Manage order
       </Typography>
-      <ReviewOrder address={order.address} items={cartItems} />
+      <ReviewOrder address={order.delivery} items={cartItems} />
       <Typography variant="h6">Status:</Typography>
       <Typography variant="h6" color="primary">
-        {lastStatusItem?.status.toUpperCase()}
+        {lastStatusItem.status?.toUpperCase()}
       </Typography>
       <Typography variant="h6">Change status:</Typography>
       <Box py={2}>
         <Formik
-          initialValues={{ status: lastStatusItem.status, comment: "" }}
+          initialValues={{ status: lastStatusItem.status!, comment: "" }}
           enableReinitialize
           onSubmit={(values) =>
             updateOrderStatus(
@@ -158,7 +165,7 @@ export default function PageOrder() {
             {statusHistory.map((statusHistoryItem) => (
               <TableRow key={order.id}>
                 <TableCell component="th" scope="row">
-                  {statusHistoryItem.status.toUpperCase()}
+                  {statusHistoryItem.status?.toUpperCase()}
                 </TableCell>
                 <TableCell align="right">
                   {new Date(statusHistoryItem.timestamp).toString()}
